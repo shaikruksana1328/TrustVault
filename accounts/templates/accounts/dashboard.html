@@ -1,0 +1,420 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Secure Workspace</title>
+    <link rel="stylesheet" href="{% static 'accounts/dashboard.css' %}">
+</head>
+
+<body>
+<div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="brand">
+            <div class="brand-mark">
+                <span class="brand-shield">◆</span>
+            </div>
+            <div class="brand-copy">
+                <strong>trust<span>vault</span></strong>
+                <small>SECURE WORKSPACE</small>
+            </div>
+        </a>
+
+        <div class="workspace-switcher">
+            <div class="workspace-avatar">T</div>
+            <div class="workspace-info">
+                <strong>Personal Workspace</strong>
+                <span>Private environment</span>
+            </div>
+            <span class="switch-arrow">⌄</span>
+        </div>
+
+        <div class="nav-group">
+            <p class="nav-heading">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-item active">
+                <span class="nav-symbol">▦</span>
+                <span>Overview</span>
+                <span class="active-indicator"></span>
+            </a>
+
+            <a href="{% url 'document_list' %}" class="nav-item">
+                <span class="nav-symbol">▤</span>
+                <span>My Documents</span>
+            </a>
+
+            <a href="{% url 'shared_documents' %}" class="nav-item">
+                <span class="nav-symbol">⇄</span>
+                <span>Shared with me</span>
+            </a>
+
+            {% if request.user.userprofile.role == 'OWNER' %}
+            <a href="{% url 'access_management' %}" class="nav-item">
+                <span class="nav-symbol">♙</span>
+                <span>Access control</span>
+            </a>
+            {% endif %}
+        </div>
+
+        {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+        <div class="nav-group">
+            <p class="nav-heading">SECURITY</p>
+
+            <a href="{% url 'activity_logs' %}" class="nav-item">
+                <span class="nav-symbol">◷</span>
+                <span>Audit activity</span>
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-security">
+            <div class="security-orbit">
+                <span>✓</span>
+            </div>
+            <div class="security-copy">
+                <strong>Security enabled</strong>
+                <p>Your workspace is protected by access controls.</p>
+            </div>
+            <span class="live-dot"></span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+            <div class="user-details">
+                <strong>{{ request.user.username }}</strong>
+                <span>
+                    {% if request.user.is_superuser %}
+                        Administrator
+                    {% elif request.user.userprofile.role == 'ADMIN' %}
+                        Administrator
+                    {% elif request.user.userprofile.role == 'OWNER' %}
+                        Document Owner
+                    {% else %}
+                        Viewer
+                    {% endif %}
+                </span>
+            </div>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-icon" title="Sign out" aria-label="Sign out">↗</button>
+            </form>
+        </div>
+    </aside>
+
+
+    <!-- Main Area -->
+    <main class="main-area">
+
+        <!-- Top Navigation -->
+        <header class="topbar">
+            <div class="page-heading">
+                <div class="eyebrow"><span class="breadcrumb-dot"></span> YOUR WORKSPACE</div>
+                <h1>Overview<span class="heading-period">.</span></h1>
+                <p>Manage your files and keep your information secure.</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="system-status">
+                    <span class="status-pulse"></span>
+                    <span>Workspace active</span>
+                </div>
+
+                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+                    <span id="themeIcon">☀</span>
+                    <span id="themeText">Light mode</span>
+                </button>
+
+                <div class="top-user">
+                    <div class="top-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="top-user-copy">
+                        <strong>{{ request.user.username }}</strong>
+                        <span>Signed in</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Hero / Security Banner -->
+        <section class="hero-panel">
+            <div class="hero-grid"></div>
+            <div class="hero-content">
+                <div class="hero-label">
+                    <span class="hero-label-dot"></span>
+                    TRUSTVAULT SECURITY CENTER
+                </div>
+
+                <h2>Your documents.<br><span>Your control.</span></h2>
+
+                <p>
+                    A secure space to organize, share and manage important
+                    documents with controlled access and transparent activity tracking.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'document_list' %}" class="button-primary">
+                        Explore documents <span>→</span>
+                    </a>
+
+                    {% if request.user.userprofile.role == 'OWNER' %}
+                    <a href="{% url 'upload_document' %}" class="button-ghost">
+                        <span>＋</span> Upload a file
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hero-visual" aria-hidden="true">
+                <div class="visual-ring ring-one"></div>
+                <div class="visual-ring ring-two"></div>
+                <div class="visual-ring ring-three"></div>
+                <div class="visual-core">
+                    <div class="core-shield">✓</div>
+                    <span>SECURE</span>
+                </div>
+                <div class="orbit-dot orbit-dot-one"></div>
+                <div class="orbit-dot orbit-dot-two"></div>
+                <div class="orbit-dot orbit-dot-three"></div>
+                <div class="visual-caption">CONTROLLED ACCESS <span>•</span> PRIVATE STORAGE</div>
+            </div>
+
+            <div class="hero-bottom-line"></div>
+        </section>
+
+
+        <!-- Statistics -->
+        <section class="metrics-section">
+            <div class="section-title-row">
+                <div>
+                    <div class="section-kicker">AT A GLANCE</div>
+                    <h2>Workspace metrics</h2>
+                </div>
+                <span class="section-note">Live dashboard data</span>
+            </div>
+
+            <div class="metrics-grid">
+
+                <article class="metric-card">
+                    <div class="metric-top">
+                        <div class="metric-icon icon-blue">▤</div>
+                        <span class="metric-index">01</span>
+                    </div>
+                    <div class="metric-value">{{ total_documents|default:"0" }}</div>
+                    <div class="metric-name">Total documents</div>
+                    <div class="metric-footer">
+                        <span class="metric-indicator blue-indicator"></span>
+                        <span>Documents in your workspace</span>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-top">
+                        <div class="metric-icon icon-violet">⇄</div>
+                        <span class="metric-index">02</span>
+                    </div>
+                    <div class="metric-value">{{ shared_documents|default:"0" }}</div>
+                    <div class="metric-name">Shared documents</div>
+                    <div class="metric-footer">
+                        <span class="metric-indicator violet-indicator"></span>
+                        <span>Documents shared with users</span>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-top">
+                        <div class="metric-icon icon-cyan">↓</div>
+                        <span class="metric-index">03</span>
+                    </div>
+                    <div class="metric-value">{{ total_downloads|default:"0" }}</div>
+                    <div class="metric-name">Total downloads</div>
+                    <div class="metric-footer">
+                        <span class="metric-indicator cyan-indicator"></span>
+                        <span>Recorded download activity</span>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-top">
+                        <div class="metric-icon icon-amber">!</div>
+                        <span class="metric-index">04</span>
+                    </div>
+                    <div class="metric-value">{{ security_incidents|default:"0" }}</div>
+                    <div class="metric-name">Denied attempts</div>
+                    <div class="metric-footer">
+                        <span class="metric-indicator amber-indicator"></span>
+                        <span>Blocked access attempts</span>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- Lower Dashboard -->
+        <section class="lower-grid">
+
+            <!-- Quick Actions -->
+            <div class="content-panel actions-panel">
+                <div class="panel-heading">
+                    <div>
+                        <div class="section-kicker">GET THINGS DONE</div>
+                        <h2>Quick access</h2>
+                    </div>
+                    <span class="panel-heading-icon">↗</span>
+                </div>
+
+                <div class="action-list">
+                    <a href="{% url 'document_list' %}" class="quick-action">
+                        <div class="quick-icon quick-blue">▤</div>
+                        <div class="quick-copy">
+                            <strong>Browse documents</strong>
+                            <span>Find and manage your files</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </a>
+
+                    <a href="{% url 'shared_documents' %}" class="quick-action">
+                        <div class="quick-icon quick-violet">⇄</div>
+                        <div class="quick-copy">
+                            <strong>Shared with me</strong>
+                            <span>View files others have shared</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </a>
+
+                    {% if request.user.userprofile.role == 'OWNER' %}
+                    <a href="{% url 'access_management' %}" class="quick-action">
+                        <div class="quick-icon quick-cyan">♙</div>
+                        <div class="quick-copy">
+                            <strong>Manage permissions</strong>
+                            <span>Control who can access your files</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </a>
+
+                    <a href="{% url 'upload_document' %}" class="quick-action">
+                        <div class="quick-icon quick-green">↑</div>
+                        <div class="quick-copy">
+                            <strong>Upload document</strong>
+                            <span>Add a new file to your workspace</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </a>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+                    <a href="{% url 'activity_logs' %}" class="quick-action">
+                        <div class="quick-icon quick-amber">◷</div>
+                        <div class="quick-copy">
+                            <strong>Review audit activity</strong>
+                            <span>Monitor recorded system events</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <!-- Security Information -->
+            <div class="content-panel security-panel">
+                <div class="panel-heading">
+                    <div>
+                        <div class="section-kicker">TRUST & PROTECTION</div>
+                        <h2>Security overview</h2>
+                    </div>
+                    <div class="security-badge">ACTIVE</div>
+                </div>
+
+                <div class="security-main">
+                    <div class="security-emblem">
+                        <div class="emblem-ring">
+                            <span>✓</span>
+                        </div>
+                    </div>
+                    <h3>Your workspace is protected</h3>
+                    <p>
+                        TrustVault uses permission-based document access.
+                        File actions are recorded for accountability.
+                    </p>
+                </div>
+
+                <div class="security-features">
+                    <div class="feature-row">
+                        <span class="feature-check">✓</span>
+                        <span>Controlled document permissions</span>
+                        <span class="feature-state">ENABLED</span>
+                    </div>
+                    <div class="feature-row">
+                        <span class="feature-check">✓</span>
+                        <span>Activity audit trail</span>
+                        <span class="feature-state">ENABLED</span>
+                    </div>
+                    <div class="feature-row">
+                        <span class="feature-check">✓</span>
+                        <span>Access verification</span>
+                        <span class="feature-state">ENABLED</span>
+                    </div>
+                </div>
+
+                {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+                <a href="{% url 'activity_logs' %}" class="security-link">
+                    View security activity <span>→</span>
+                </a>
+                {% endif %}
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <span>© 2026 TrustVault</span>
+            <span class="footer-center">SECURE DOCUMENT SHARING WITH ACCOUNTABILITY</span>
+            <span><i class="footer-live-dot"></i> Workspace active</span>
+        </footer>
+
+    </main>
+</div>
+
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+
+        if (theme === "light") {
+            themeIcon.textContent = "☾";
+            themeText.textContent = "Dark mode";
+        } else {
+            themeIcon.textContent = "☀";
+            themeText.textContent = "Light mode";
+        }
+    }
+
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        localStorage.setItem("trustvault-theme", newTheme);
+        applyTheme(newTheme);
+    });
+</script>
+
+</body>
+</html>

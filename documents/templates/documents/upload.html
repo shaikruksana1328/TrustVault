@@ -1,0 +1,249 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Upload Document</title>
+    <link rel="stylesheet" href="{% static 'documents/upload.css' %}">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">◆</div>
+            <div class="brand-copy">
+                <h2>TrustVault</h2>
+                <span>SECURE WORKSPACE</span>
+            </div>
+        </div>
+
+        <div class="workspace-switcher">
+            <div class="workspace-avatar">TV</div>
+            <div class="workspace-info">
+                <strong>Personal Workspace</strong>
+                <span>Private &amp; secure</span>
+            </div>
+        </div>
+
+        <nav class="nav-group">
+            <span class="nav-heading">WORKSPACE</span>
+
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-symbol">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'document_list' %}" class="nav-item active">
+                <span class="nav-symbol">▤</span>
+                <span>My Documents</span>
+                <span class="active-indicator"></span>
+            </a>
+
+            <a href="{% url 'shared_documents' %}" class="nav-item">
+                <span class="nav-symbol">⇄</span>
+                <span>Shared With Me</span>
+            </a>
+
+            {% if request.user.userprofile.role == 'OWNER' %}
+            <a href="{% url 'access_management' %}" class="nav-item">
+                <span class="nav-symbol">♧</span>
+                <span>Access Management</span>
+            </a>
+            {% endif %}
+
+            {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+            <a href="{% url 'activity_logs' %}" class="nav-item">
+                <span class="nav-symbol">◷</span>
+                <span>Activity Logs</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-security">
+            <div class="security-orbit">✧</div>
+            <div class="security-copy">
+                <strong>Your files are protected</strong>
+                <span>Secure document workspace</span>
+            </div>
+            <span class="live-dot"></span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+            <div class="user-details">
+                <strong>{{ request.user.username }}</strong>
+                <span>{{ request.user.userprofile.get_role_display }}</span>
+            </div>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-icon" title="Logout">↗</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div class="page-heading">
+                <span class="eyebrow">MY DOCUMENTS <span class="breadcrumb-dot">/</span> NEW UPLOAD</span>
+                <h1>Upload Document</h1>
+                <p>Add a document to your secure workspace.</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="system-status">
+                    <span class="live-dot"></span>
+                    Secure workspace
+                </div>
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    ☼
+                </button>
+                <div class="top-user">
+                    <div class="top-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="top-user-copy">
+                        <strong>{{ request.user.username }}</strong>
+                        <span>Account</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="upload-intro">
+            <div class="intro-icon">↑</div>
+            <div>
+                <span class="eyebrow">SECURE FILE UPLOAD</span>
+                <h2>Bring your documents into TrustVault</h2>
+                <p>Organise your files and keep them protected in one place.</p>
+            </div>
+        </section>
+
+        <section class="upload-layout">
+            <div class="upload-main-card">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">DOCUMENT INFORMATION</span>
+                        <h2>Document details</h2>
+                        <p>Enter the details below to upload your document.</p>
+                    </div>
+                    <div class="step-indicator">01 <span>/ 01</span></div>
+                </div>
+
+                {% if messages %}
+                    <div class="message-list">
+                        {% for message in messages %}
+                            <div class="message {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-errors">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Document title <span>*</span></label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="field-error">{{ form.title.errors }}</div>
+                        {% endif %}
+                        <small>Give your document a clear and recognisable name.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.category.id_for_label }}">Category <span>*</span></label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="field-error">{{ form.category.errors }}</div>
+                        {% endif %}
+                        <small>Choose a category to keep your documents organised.</small>
+                    </div>
+
+                    <div class="form-group file-group">
+                        <label for="{{ form.file.id_for_label }}">Select document <span>*</span></label>
+                        <div class="file-drop-area">
+                            <div class="file-icon">⇧</div>
+                            <strong>Choose a file to upload</strong>
+                            <p>Select a document from your device.</p>
+                            {{ form.file }}
+                        </div>
+                        {% if form.file.errors %}
+                            <div class="field-error">{{ form.file.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'document_list' %}" class="cancel-btn">Cancel</a>
+                        <button type="submit" class="upload-btn">
+                            <span>↑</span> Upload Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="upload-side-card">
+                <div class="side-card-icon">♢</div>
+                <span class="eyebrow">YOUR SECURITY</span>
+                <h3>Protected from the start</h3>
+                <p>Your document stays within your TrustVault workspace. Access is controlled by document permissions.</p>
+
+                <div class="security-feature">
+                    <span>✓</span>
+                    <div>
+                        <strong>Controlled access</strong>
+                        <small>Share only with authorised users.</small>
+                    </div>
+                </div>
+
+                <div class="security-feature">
+                    <span>✓</span>
+                    <div>
+                        <strong>Activity tracking</strong>
+                        <small>Document actions are recorded.</small>
+                    </div>
+                </div>
+
+                <div class="security-note">
+                    <span class="live-dot"></span>
+                    Your secure workspace is active
+                </div>
+            </aside>
+        </section>
+
+        <footer class="app-footer">
+            <span>© 2026 TrustVault</span>
+            <span>Secure document management</span>
+        </footer>
+
+    </main>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☼" : "☾";
+    }
+
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        localStorage.setItem("trustvault-theme", newTheme);
+        applyTheme(newTheme);
+    });
+</script>
+
+</body>
+</html>

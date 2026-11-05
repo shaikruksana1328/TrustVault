@@ -1,0 +1,572 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Edit Document</title>
+
+    <link rel="stylesheet" href="{% static 'documents/edit.css' %}">
+
+    <style>
+        :root {
+            --bg: #080f1d;
+            --sidebar: #0b1424;
+            --surface: #101c30;
+            --surface-hover: #14233b;
+            --text: #edf4ff;
+            --muted: #8495b0;
+            --border: #1c2c45;
+            --blue: #438cff;
+            --green: #35d6a0;
+            --shadow: 0 12px 35px rgba(0,0,0,.16);
+        }
+
+        [data-theme="light"] {
+            --bg: #f3f6fc;
+            --sidebar: #ffffff;
+            --surface: #ffffff;
+            --surface-hover: #f5f8ff;
+            --text: #14233b;
+            --muted: #65748e;
+            --border: #e5eaf3;
+            --blue: #286fe5;
+            --green: #159d75;
+            --shadow: 0 10px 28px rgba(34,57,99,.055);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", sans-serif;
+        }
+
+        .app-shell { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 25px 17px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px;
+            margin-bottom: 38px;
+        }
+
+        .brand-mark {
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            background: linear-gradient(135deg,#438cff,#2455c8);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-name { font-size: 19px; font-weight: 750; }
+        .brand-sub { color: var(--muted); font-size: 10px; margin-top: 3px; letter-spacing: 1.4px; }
+
+        .nav-heading {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            padding: 0 12px;
+            margin: 0 0 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--blue);
+            color: var(--blue);
+        }
+
+        .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #1d3e70;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .user-name { font-size: 12px; font-weight: 650; }
+        .user-role { color: var(--muted); font-size: 10px; margin-top: 3px; }
+
+        .logout {
+            display: block;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .main-area { flex: 1; min-width: 0; }
+
+        .topbar {
+            height: 76px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: var(--sidebar);
+        }
+
+        .breadcrumb { color: var(--muted); font-size: 12px; }
+        .breadcrumb strong { color: var(--text); }
+
+        .theme-toggle {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            padding: 9px 13px;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .content {
+            max-width: 1050px;
+            margin: auto;
+            padding: 38px 40px 55px;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 11px;
+            letter-spacing: 1.7px;
+            font-weight: 750;
+            text-transform: uppercase;
+        }
+
+        .page-title { font-size: 29px; margin: 10px 0 8px; }
+        .page-description { color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 275px;
+            gap: 22px;
+            margin-top: 30px;
+            align-items: start;
+        }
+
+        .editor-card, .side-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .editor-card { padding: 27px; }
+
+        .card-heading {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 7px;
+        }
+
+        .card-description {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 27px;
+        }
+
+        .form-group { margin-bottom: 23px; }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin-bottom: 9px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--bg);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(67,140,255,.12);
+        }
+
+        .form-group input[type="file"] {
+            padding: 11px;
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"]::file-selector-button {
+            background: var(--surface-hover);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .help-text {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .errorlist {
+            color: #ff7777;
+            font-size: 12px;
+            padding-left: 17px;
+        }
+
+        .file-section {
+            background: var(--bg);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 17px;
+            margin-bottom: 25px;
+        }
+
+        .file-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .file-section p {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        .save-btn, .cancel-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 19px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: 0;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg,#438cff,#2864d7);
+            color: white;
+        }
+
+        .save-btn:hover { opacity: .9; }
+
+        .cancel-btn {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .side-card { padding: 21px; margin-bottom: 17px; }
+
+        .side-card h3 { font-size: 13px; margin: 0 0 16px; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+        }
+
+        .info-row:last-child { border: 0; }
+        .info-label { color: var(--muted); }
+        .info-value { font-weight: 650; text-align: right; }
+
+        .security-note {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .security-note span { color: var(--green); font-weight: 700; }
+
+        @media(max-width: 950px) {
+            .sidebar { width: 210px; }
+            .editor-layout { grid-template-columns: 1fr; }
+        }
+
+        @media(max-width: 650px) {
+            .sidebar { display: none; }
+            .topbar { padding: 0 18px; }
+            .content { padding: 28px 17px; }
+            .editor-card { padding: 20px; }
+            .page-title { font-size: 24px; }
+            .form-actions { flex-direction: column; }
+            .save-btn, .cancel-btn { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">T</div>
+            <div>
+                <div class="brand-name">TrustVault</div>
+                <div class="brand-sub">SECURE WORKSPACE</div>
+            </div>
+        </div>
+
+        <div class="nav-heading">WORKSPACE</div>
+
+        <a href="{% url 'dashboard' %}" class="nav-item">
+            <span class="nav-icon">⌂</span> Dashboard
+        </a>
+
+        <a href="{% url 'document_list' %}" class="nav-item active">
+            <span class="nav-icon">▤</span> My Documents
+        </a>
+
+        <a href="{% url 'shared_documents' %}" class="nav-item">
+            <span class="nav-icon">⇄</span> Shared With Me
+        </a>
+
+        {% if request.user.userprofile.role == 'OWNER' %}
+        <a href="{% url 'access_management' %}" class="nav-item">
+            <span class="nav-icon">♙</span> Access Management
+        </a>
+        {% endif %}
+
+        {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+        <a href="{% url 'activity_logs' %}" class="nav-item">
+            <span class="nav-icon">◷</span> Activity Logs
+        </a>
+        {% endif %}
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-user">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <div class="user-name">{{ request.user.username }}</div>
+                    <div class="user-role">{{ request.user.userprofile.get_role_display }}</div>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout" style="background:none;border:0;cursor:pointer;">
+                    ↪ Sign out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div class="breadcrumb">
+                My Documents / <strong>Edit Document</strong>
+            </div>
+
+            <button class="theme-toggle" id="themeToggle" type="button">
+                ☀ / ☾ Theme
+            </button>
+        </header>
+
+        <div class="content">
+
+            <div class="eyebrow">Document Management</div>
+            <h1 class="page-title">Edit Document</h1>
+            <p class="page-description">
+                Update your document information and manage its attached file.
+                Your changes will be saved securely.
+            </p>
+
+            <div class="editor-layout">
+
+                <section class="editor-card">
+
+                    <h2 class="card-heading">Document Information</h2>
+                    <p class="card-description">
+                        Make the necessary changes to your document below.
+                    </p>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="{{ form.title.id_for_label }}">Document Title</label>
+                            {{ form.title }}
+                            {{ form.title.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.category.id_for_label }}">Document Category</label>
+                            {{ form.category }}
+                            {{ form.category.errors }}
+                        </div>
+
+                        <div class="file-section">
+                            <div class="file-section-title">Current File</div>
+
+                            <div style="margin-top:12px; display:flex; align-items:center; gap:12px;">
+                                <div style="font-size:25px;">📄</div>
+                                <div>
+                                    <strong style="font-size:13px;">
+                                        {{ document.file.name|cut:"private_documents/" }}
+                                    </strong>
+                                    <p style="margin-top:5px;">
+                                        Currently attached · Your file is stored securely.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.file.id_for_label }}">Replace Document File</label>
+                            {{ form.file }}
+                            {{ form.file.errors }}
+                            <div class="help-text">
+                                Optional. Leave this field empty to keep the current file.
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn">
+                                ✓ Save Changes
+                            </button>
+
+                            <a href="{% url 'document_list' %}" class="cancel-btn">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </section>
+
+                <aside>
+
+                    <div class="side-card">
+                        <h3>Document Overview</h3>
+
+                        <div class="info-row">
+                            <span class="info-label">Document</span>
+                            <span class="info-value">{{ document.title|truncatechars:22 }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">Owner</span>
+                            <span class="info-value">{{ document.owner.username }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">Category</span>
+                            <span class="info-value">{{ document.category }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">Last Updated</span>
+                            <span class="info-value">{{ document.updated_at|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="side-card">
+                        <h3>Security Information</h3>
+                        <p class="security-note">
+                            <span>● Secure editing</span><br><br>
+                            Only users with the required edit permission can
+                            update this document. Changes are recorded in the
+                            TrustVault activity log.
+                        </p>
+                    </div>
+
+                </aside>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("trustvault-theme", theme);
+    }
+
+    applyTheme(localStorage.getItem("trustvault-theme") || "dark");
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme =
+            document.documentElement.getAttribute("data-theme");
+
+        applyTheme(currentTheme === "dark" ? "light" : "dark");
+    });
+</script>
+
+</body>
+</html>

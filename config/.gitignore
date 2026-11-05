@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.env
+.env.*
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Private uploaded documents
+private_uploads/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,213 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Access Management</title>
+    <link rel="stylesheet" href="{% static 'documents/access_management.css' %}">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">◆</div>
+            <div class="brand-copy">
+                <h2>TrustVault</h2>
+                <span>SECURE WORKSPACE</span>
+            </div>
+        </div>
+
+        <div class="workspace-switcher">
+            <div class="workspace-avatar">TV</div>
+            <div class="workspace-info">
+                <strong>Personal Workspace</strong>
+                <span>Private &amp; secure</span>
+            </div>
+        </div>
+
+        <nav class="nav-group">
+            <span class="nav-heading">WORKSPACE</span>
+
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-symbol">⌂</span> Dashboard
+            </a>
+            <a href="{% url 'document_list' %}" class="nav-item">
+                <span class="nav-symbol">▤</span> My Documents
+            </a>
+            <a href="{% url 'shared_documents' %}" class="nav-item">
+                <span class="nav-symbol">⇄</span> Shared With Me
+            </a>
+            <a href="{% url 'access_management' %}" class="nav-item active">
+                <span class="nav-symbol">♧</span> Access Management
+                <span class="active-indicator"></span>
+            </a>
+
+            {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+            <a href="{% url 'activity_logs' %}" class="nav-item">
+                <span class="nav-symbol">◷</span> Activity Logs
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-security">
+            <div class="security-orbit">✧</div>
+            <div class="security-copy">
+                <strong>Your files are protected</strong>
+                <span>Secure document workspace</span>
+            </div>
+            <span class="live-dot"></span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+            <div class="user-details">
+                <strong>{{ request.user.username }}</strong>
+                <span>{{ request.user.userprofile.get_role_display }}</span>
+            </div>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-icon" title="Logout">↗</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div class="page-heading">
+                <span class="eyebrow">WORKSPACE <span class="breadcrumb-dot">/</span> PERMISSIONS</span>
+                <h1>Access Management</h1>
+                <p>Control who can access your documents.</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="system-status">
+                    <span class="live-dot"></span> Secure workspace
+                </div>
+                <button type="button" class="theme-toggle" id="themeToggle">☼</button>
+                <div class="top-user">
+                    <div class="top-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="top-user-copy">
+                        <strong>{{ request.user.username }}</strong>
+                        <span>Account</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="access-hero">
+            <div class="hero-icon">♧</div>
+            <div>
+                <span class="eyebrow">PERMISSION CONTROL</span>
+                <h2>Your documents, your control.</h2>
+                <p>Review shared access and revoke permissions whenever necessary.</p>
+            </div>
+        </section>
+
+        <section class="permission-card">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">ACCESS OVERVIEW</span>
+                    <h2>Granted Permissions</h2>
+                    <p>Users who currently have access to your documents.</p>
+                </div>
+                <div class="permission-count">
+                    {{ permissions|length }} <span>GRANTS</span>
+                </div>
+            </div>
+
+            {% if permissions %}
+            <div class="table-wrapper">
+                <table class="permission-table">
+                    <thead>
+                        <tr>
+                            <th>DOCUMENT</th>
+                            <th>SHARED WITH</th>
+                            <th>PERMISSION</th>
+                            <th>GRANTED DATE</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for permission in permissions %}
+                        <tr>
+                            <td>
+                                <div class="document-cell">
+                                    <span class="document-icon">▤</span>
+                                    <strong>{{ permission.document.title }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <span class="small-avatar">{{ permission.user.username|first|upper }}</span>
+                                    {{ permission.user.username }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="permission-badge {% if permission.permission == 'EDIT' %}edit-badge{% else %}read-badge{% endif %}">
+                                    {{ permission.get_permission_display }}
+                                </span>
+                            </td>
+                            <td class="date-cell">{{ permission.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <form method="POST"
+                                      action="{% url 'revoke_permission' permission.document.id permission.id %}"
+                                      onsubmit="return confirm('Revoke this user’s access?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="revoke-button">
+                                        Revoke Access
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">♧</div>
+                <h3>No shared permissions yet</h3>
+                <p>You haven't shared any documents with other users. When you grant access, it will appear here.</p>
+                <a href="{% url 'document_list' %}" class="back-button">Go to My Documents</a>
+            </div>
+            {% endif %}
+
+        </section>
+
+        <footer class="app-footer">
+            <span>© 2026 TrustVault</span>
+            <span>Secure document management</span>
+        </footer>
+
+    </main>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☼" : "☾";
+    }
+
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        localStorage.setItem("trustvault-theme", newTheme);
+        applyTheme(newTheme);
+    });
+</script>
+
+</body>
+</html>

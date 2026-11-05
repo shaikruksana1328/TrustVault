@@ -1,0 +1,271 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Shared With Me</title>
+    <link rel="stylesheet" href="{% static 'documents/shared_documents.css' %}">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="brand">
+            <span class="brand-mark">◆</span>
+            <span class="brand-copy">
+                <strong>trustvault</strong>
+                <small>SECURE WORKSPACE</small>
+            </span>
+        </a>
+
+        <div class="workspace-switcher">
+            <div class="workspace-avatar">TV</div>
+            <div class="workspace-info">
+                <strong>Personal Workspace</strong>
+                <small>Protected environment</small>
+            </div>
+        </div>
+
+        <nav class="nav-group">
+            <p class="nav-heading">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-symbol">⌂</span>
+                <span>Overview</span>
+            </a>
+
+            <a href="{% url 'document_list' %}" class="nav-item">
+                <span class="nav-symbol">▤</span>
+                <span>My Documents</span>
+            </a>
+
+            <a href="{% url 'shared_documents' %}" class="nav-item active">
+                <span class="nav-symbol">⇄</span>
+                <span>Shared With Me</span>
+                <span class="active-indicator"></span>
+            </a>
+
+            {% if request.user.userprofile.role == 'OWNER' %}
+            <a href="{% url 'access_management' %}" class="nav-item">
+                <span class="nav-symbol">♧</span>
+                <span>Access Control</span>
+            </a>
+            {% endif %}
+
+            {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+            <a href="{% url 'activity_logs' %}" class="nav-item">
+                <span class="nav-symbol">◷</span>
+                <span>Audit Activity</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-security">
+            <div class="security-icon">✦</div>
+            <div>
+                <strong>Your files are protected</strong>
+                <small>Access-controlled workspace</small>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+            <div class="user-details">
+                <strong>{{ request.user.username }}</strong>
+                <small>{{ request.user.userprofile.get_role_display }}</small>
+            </div>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-icon" title="Logout">↗</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div class="page-heading">
+                <div class="breadcrumb">
+                    Workspace <span>/</span> Shared With Me
+                </div>
+                <h1>Shared With Me</h1>
+                <p>Documents that other users have securely shared with you.</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="system-status">
+                    <span class="live-dot"></span>
+                    Secure connection
+                </div>
+
+                <button class="theme-toggle" id="themeToggle" type="button">
+                    <span id="themeIcon">☀</span>
+                    <span id="themeText">Light mode</span>
+                </button>
+
+                <div class="top-user">
+                    <div class="top-avatar">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                    <div class="top-user-copy">
+                        <strong>{{ request.user.username }}</strong>
+                        <small>Workspace member</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+
+            <section class="welcome-banner">
+                <div class="welcome-copy">
+                    <span class="section-label">COLLABORATION SPACE</span>
+                    <h2>Your shared documents, all in one place.</h2>
+                    <p>Access files shared with you and check the permission assigned by each document owner.</p>
+                </div>
+                <div class="banner-art">
+                    <div class="art-circle"></div>
+                    <div class="art-file">▤</div>
+                    <div class="art-shield">✓</div>
+                </div>
+            </section>
+
+            <section class="section-header">
+                <div>
+                    <span class="section-label">YOUR COLLECTION</span>
+                    <h2>Available Shared Documents</h2>
+                    <p>Files you can access through shared permissions.</p>
+                </div>
+                <div class="collection-tag">
+                    <span class="live-dot"></span>
+                    Private access
+                </div>
+            </section>
+
+            <section class="documents-panel">
+
+                {% if documents %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>DOCUMENT</th>
+                                <th>CATEGORY</th>
+                                <th>SHARED BY</th>
+                                <th>DATE ADDED</th>
+                                <th>PERMISSION</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in documents %}
+                            <tr>
+                                <td>
+                                    <div class="document-name">
+                                        <span class="file-icon">▤</span>
+                                        <div>
+                                            <strong>{{ document.title }}</strong>
+                                            <small>Secure document</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="category-tag">{{ document.category }}</span>
+                                </td>
+
+                                <td>
+                                    <div class="owner-name">
+                                        <span class="owner-avatar">{{ document.owner.username|first|upper }}</span>
+                                        {{ document.owner.username }}
+                                    </div>
+                                </td>
+
+                                <td>{{ document.uploaded_at|date:"d M Y" }}</td>
+
+                                <td>
+                                    {% for permission in document.permissions.all %}
+                                        {% if permission.user == request.user %}
+                                            {% if permission.permission == 'EDIT' %}
+                                                <span class="permission-badge edit-badge">Edit access</span>
+                                            {% else %}
+                                                <span class="permission-badge read-badge">Read only</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+                                        <a class="action-btn download-btn"
+                                           href="{% url 'download_document' document.id %}">
+                                            ↓ Download
+                                        </a>
+
+                                        {% for permission in document.permissions.all %}
+                                            {% if permission.user == request.user and permission.permission == 'EDIT' %}
+                                                <a class="action-btn edit-btn"
+                                                   href="{% url 'edit_document' document.id %}">
+                                                    Edit
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">⇄</div>
+                    <h3>No shared documents yet</h3>
+                    <p>When another user shares a document with you, it will appear here.</p>
+                    <a href="{% url 'dashboard' %}" class="empty-link">Back to Dashboard →</a>
+                </div>
+                {% endif %}
+
+            </section>
+
+            <footer class="app-footer">
+                <span>© 2026 TrustVault</span>
+                <span>Secure document sharing · Protected access</span>
+            </footer>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeIcon.textContent = theme === "dark" ? "☀" : "☾";
+        themeText.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+    }
+
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        localStorage.setItem("trustvault-theme", newTheme);
+        applyTheme(newTheme);
+    });
+</script>
+
+</body>
+</html>

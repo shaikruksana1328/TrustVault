@@ -1,0 +1,627 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Activity Logs</title>
+
+    <link rel="stylesheet" href="{% static 'audit/activity_logs.css' %}">
+
+    <style>
+        :root {
+            --bg: #080f1d;
+            --sidebar: #0b1424;
+            --surface: #101c30;
+            --surface-hover: #14233b;
+            --text: #edf4ff;
+            --muted: #8495b0;
+            --border: #1c2c45;
+            --blue: #438cff;
+            --green: #35d6a0;
+            --amber: #f4b85e;
+            --red: #fb7185;
+            --shadow: 0 12px 35px rgba(0,0,0,.16);
+        }
+
+        [data-theme="light"] {
+            --bg: #f3f6fc;
+            --sidebar: #ffffff;
+            --surface: #ffffff;
+            --surface-hover: #f5f8ff;
+            --text: #14233b;
+            --muted: #65748e;
+            --border: #e5eaf3;
+            --blue: #286fe5;
+            --green: #159d75;
+            --amber: #d48a2f;
+            --red: #e34e69;
+            --shadow: 0 10px 28px rgba(34,57,99,.055);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 27px 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 10px;
+            margin-bottom: 42px;
+        }
+
+        .brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #438cff, #725cf5);
+            border-radius: 12px;
+            color: white;
+            font-size: 21px;
+        }
+
+        .brand-name {
+            font-size: 19px;
+            font-weight: 750;
+            letter-spacing: -.5px;
+        }
+
+        .brand-name span {
+            color: var(--blue);
+        }
+
+        .nav-label {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            padding: 0 12px;
+            margin-bottom: 13px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            padding: 12px 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 550;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: .2s;
+        }
+
+        .nav-links a:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .nav-links a.active {
+            background: rgba(67,140,255,.13);
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 19px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-bottom a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 13px;
+            display: block;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .sidebar-bottom a:hover {
+            color: var(--red);
+            background: var(--surface-hover);
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 34px 38px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 34px;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 750;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 9px;
+        }
+
+        h1 {
+            font-size: clamp(25px, 3vw, 32px);
+            letter-spacing: -.8px;
+            font-weight: 750;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 9px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .hero {
+            background: linear-gradient(115deg, #10264a, #17294a 65%, #25285a);
+            border: 1px solid #263d65;
+            border-radius: 17px;
+            padding: 25px 27px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "◷";
+            position: absolute;
+            right: 35px;
+            top: 0;
+            font-size: 100px;
+            color: rgba(255,255,255,.06);
+        }
+
+        .hero h2 {
+            color: #fff;
+            font-size: 19px;
+            margin-bottom: 9px;
+        }
+
+        .hero p {
+            color: #aebfda;
+            font-size: 13px;
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        .log-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 23px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-heading h2 {
+            font-size: 16px;
+        }
+
+        .card-heading p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 11px;
+            margin-bottom: 22px;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 11px 13px;
+            font-size: 12px;
+            outline: none;
+            min-height: 41px;
+        }
+
+        .filter-form input:focus,
+        .filter-form select:focus {
+            border-color: var(--blue);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 190px;
+        }
+
+        .filter-btn,
+        .clear-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 11px 17px;
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: var(--blue);
+            color: white;
+        }
+
+        .clear-btn {
+            background: var(--surface-hover);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg);
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        td {
+            color: var(--text);
+        }
+
+        tbody tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .action {
+            display: inline-block;
+            padding: 6px 9px;
+            border-radius: 6px;
+            background: rgba(67,140,255,.12);
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 42px 15px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            display: block;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        @media(max-width: 900px) {
+            .sidebar {
+                width: 210px;
+            }
+            .main-content {
+                padding: 26px 20px;
+            }
+        }
+
+        @media(max-width: 650px) {
+            .app-layout {
+                display: block;
+            }
+            .sidebar {
+                width: 100%;
+                padding: 17px;
+            }
+            .brand {
+                margin-bottom: 18px;
+            }
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .sidebar-bottom {
+                margin-top: 15px;
+            }
+            .main-content {
+                padding: 25px 15px;
+            }
+            .topbar {
+                align-items: flex-start;
+            }
+            .log-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">⬡</div>
+            <div class="brand-name">Trust<span>Vault</span></div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <nav class="nav-links">
+            <a href="{% url 'dashboard' %}">
+                <span class="nav-icon">⌂</span> Dashboard
+            </a>
+            <a href="{% url 'document_list' %}">
+                <span class="nav-icon">▤</span> My Documents
+            </a>
+            <a href="{% url 'shared_documents' %}">
+                <span class="nav-icon">⇄</span> Shared With Me
+            </a>
+
+            {% if request.user.userprofile.role == 'OWNER' %}
+            <a href="{% url 'access_management' %}">
+                <span class="nav-icon">♧</span> Access Management
+            </a>
+            {% endif %}
+
+            {% if request.user.is_superuser or request.user.userprofile.role == 'ADMIN' %}
+            <a href="{% url 'activity_logs' %}" class="active">
+                <span class="nav-icon">◷</span> Activity Logs
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="{% url 'logout' %}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                ↪ Sign Out
+            </a>
+            <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:none;">
+                {% csrf_token %}
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <div class="eyebrow">Security & Monitoring</div>
+                <h1>Activity Logs</h1>
+                <p class="subtitle">
+                    Monitor document activity and security events.
+                </p>
+            </div>
+
+            <div class="top-actions">
+                <button class="theme-btn" id="themeToggle" type="button" title="Toggle theme">☀</button>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h2>Complete Activity Visibility</h2>
+            <p>
+                Review document operations, permission changes and security events.
+                Every recorded activity helps maintain accountability across TrustVault.
+            </p>
+        </section>
+
+        <section class="log-card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Audit Trail</h2>
+                    <p>Review and filter recorded system events.</p>
+                </div>
+            </div>
+
+            <form method="GET" class="filter-form">
+
+                <input
+                    class="search-input"
+                    type="text"
+                    name="search"
+                    placeholder="Search username or document..."
+                    value="{{ search_query }}"
+                >
+
+                <select name="action">
+                    <option value="">All Activities</option>
+                    {% for value, label in action_choices %}
+                        <option value="{{ value }}" {% if action_filter == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <input
+                    type="date"
+                    name="date"
+                    value="{{ date_filter }}"
+                >
+
+                <button type="submit" class="filter-btn">Filter</button>
+
+                <a href="{% url 'activity_logs' %}" class="clear-btn">Clear</a>
+
+            </form>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Actor</th>
+                            <th>Action</th>
+                            <th>Document</th>
+                            <th>Target User</th>
+                            <th>Details</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.timestamp|date:"d M Y, h:i A" }}</td>
+
+                            <td>
+                                {% if log.actor %}
+                                    {{ log.actor.username }}
+                                {% else %}
+                                    Deleted User
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="action">{{ log.get_action_display }}</span>
+                            </td>
+
+                            <td>
+                                {% if log.document %}
+                                    {{ log.document.title }}
+                                {% else %}
+                                    Deleted / Unavailable
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if log.target_user %}
+                                    {{ log.target_user.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                            <td>{{ log.details|default:"-" }}</td>
+                            <td>{{ log.ip_address|default:"-" }}</td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="empty">
+                                <span class="empty-icon">◷</span>
+                                No activity records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☀" : "☾";
+    }
+
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        applyTheme(newTheme);
+        localStorage.setItem("trustvault-theme", newTheme);
+    });
+</script>
+
+</body>
+</html>

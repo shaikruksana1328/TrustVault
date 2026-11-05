@@ -1,0 +1,493 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Create Account</title>
+
+    <style>
+        :root {
+            --bg: #080f1d;
+            --surface: #101c30;
+            --text: #edf4ff;
+            --muted: #8495b0;
+            --border: #1c2c45;
+            --blue: #438cff;
+            --input: #0b1628;
+        }
+
+        [data-theme="light"] {
+            --bg: #f3f6fc;
+            --surface: #ffffff;
+            --text: #14233b;
+            --muted: #65748e;
+            --border: #e5eaf3;
+            --blue: #286fe5;
+            --input: #f8faff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 25px;
+            right: 28px;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 970px;
+            min-height: 610px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,.2);
+        }
+
+        .brand-panel {
+            background: linear-gradient(145deg, #10264a, #142b50 55%, #25285a);
+            padding: 48px 42px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-panel::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 50%;
+            right: -100px;
+            top: 100px;
+            box-shadow: 0 0 0 35px rgba(255,255,255,.025),
+                        0 0 0 70px rgba(255,255,255,.02);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #438cff, #725cf5);
+            color: white;
+            font-size: 24px;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -.5px;
+        }
+
+        .brand-name span {
+            color: #70aaff;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            margin: 65px 0;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            color: #9dc3ff;
+            background: rgba(67,140,255,.16);
+            border: 1px solid rgba(120,170,255,.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: 1.2px;
+            margin-bottom: 24px;
+        }
+
+        .brand-content h2 {
+            font-size: 34px;
+            line-height: 1.25;
+            letter-spacing: -.8px;
+            color: white;
+            max-width: 370px;
+        }
+
+        .brand-content p {
+            color: #b0c2dd;
+            font-size: 13px;
+            line-height: 1.9;
+            margin-top: 17px;
+            max-width: 350px;
+        }
+
+        .security-points {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dce9ff;
+            font-size: 12px;
+        }
+
+        .security-icon {
+            width: 31px;
+            height: 31px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.1);
+            display: grid;
+            place-items: center;
+            color: #83b5ff;
+        }
+
+        .form-panel {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-heading {
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 13px;
+        }
+
+        .form-heading h1 {
+            font-size: 29px;
+            letter-spacing: -.8px;
+            margin-bottom: 10px;
+        }
+
+        .form-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .messages {
+            background: rgba(251,113,133,.1);
+            border: 1px solid rgba(251,113,133,.25);
+            color: #fb9aaa;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin-bottom: 9px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--input);
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+            transition: .2s;
+        }
+
+        input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(67,140,255,.12);
+        }
+
+        input::placeholder {
+            color: var(--muted);
+        }
+
+        .password-hint {
+            color: var(--muted);
+            font-size: 10px;
+            margin-top: 7px;
+        }
+
+        .register-btn {
+            width: 100%;
+            border: none;
+            border-radius: 9px;
+            padding: 14px;
+            margin-top: 7px;
+            background: linear-gradient(100deg, #438cff, #3678e8);
+            color: white;
+            font-size: 13px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 20px rgba(67,140,255,.25);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .login-link a {
+            color: var(--blue);
+            font-weight: 750;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .form-footer {
+            margin-top: 27px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        @media(max-width: 750px) {
+            body {
+                padding: 15px;
+            }
+
+            .register-container {
+                max-width: 470px;
+                grid-template-columns: 1fr;
+            }
+
+            .brand-panel {
+                padding: 27px;
+            }
+
+            .brand-content {
+                margin: 35px 0 20px;
+            }
+
+            .brand-content h2 {
+                font-size: 25px;
+            }
+
+            .security-points {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 35px 27px;
+            }
+
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<button class="theme-toggle" id="themeToggle"
+        type="button" title="Toggle theme">☀</button>
+
+<div class="register-container">
+
+    <section class="brand-panel">
+
+        <div class="brand">
+            <div class="brand-icon">⬡</div>
+            <div class="brand-name">Trust<span>Vault</span></div>
+        </div>
+
+        <div class="brand-content">
+            <span class="brand-tag">JOIN TRUSTVAULT</span>
+
+            <h2>Start managing your documents securely.</h2>
+
+            <p>
+                Create your account and experience a secure workspace
+                designed for document management, controlled sharing
+                and transparent activity tracking.
+            </p>
+        </div>
+
+        <div class="security-points">
+            <div class="security-item">
+                <span class="security-icon">♧</span>
+                Controlled document access
+            </div>
+
+            <div class="security-item">
+                <span class="security-icon">⌑</span>
+                Secure document storage
+            </div>
+
+            <div class="security-item">
+                <span class="security-icon">◷</span>
+                Transparent activity tracking
+            </div>
+        </div>
+
+    </section>
+
+    <section class="form-panel">
+
+        <div class="form-heading">
+            <div class="eyebrow">Get Started</div>
+            <h1>Create your account</h1>
+            <p>Enter your details to join the TrustVault workspace.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+                <p class="password-hint">Use at least 8 characters.</p>
+            </div>
+
+            <button type="submit" class="register-btn">
+                Create Account →
+            </button>
+        </form>
+
+        <p class="login-link">
+            Already have an account?
+            <a href="/accounts/login/">Sign in</a>
+        </p>
+
+        <div class="form-footer">
+            © 2026 TrustVault · Secure Document Management
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☀" : "☾";
+    }
+
+    const savedTheme = localStorage.getItem("trustvault-theme") || "dark";
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        applyTheme(newTheme);
+        localStorage.setItem("trustvault-theme", newTheme);
+    });
+</script>
+
+</body>
+</html>
