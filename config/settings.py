@@ -37,6 +37,9 @@ ALLOWED_HOSTS = os.environ.get(
     'DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost'
 ).split(',')
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -187,6 +190,9 @@ STORAGES = {
 
 
 # Production security settings
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 
 SESSION_COOKIE_SECURE = os.environ.get('DJANGO_SESSION_COOKIE_SECURE', 'False').lower() == 'true'
