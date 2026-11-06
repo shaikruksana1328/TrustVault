@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
 
     # TrustVault applications
     'accounts.apps.AccountsConfig',
@@ -141,21 +142,50 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
+
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STORAGES = {
-    "default": {
+# Private document storage
+MEDIA_ROOT = BASE_DIR / 'private_uploads'
+
+# Enable Supabase storage only when explicitly configured
+USE_SUPABASE_STORAGE = (
+    os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() == 'true'
+)
+
+if USE_SUPABASE_STORAGE:
+    default_storage = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": os.environ["SUPABASE_STORAGE_BUCKET"],
+            "endpoint_url": os.environ["SUPABASE_S3_ENDPOINT_URL"],
+            "region_name": os.environ.get(
+                "SUPABASE_S3_REGION", "ap-southeast-2"
+            ),
+            "access_key": os.environ["SUPABASE_S3_ACCESS_KEY_ID"],
+            "secret_key": os.environ["SUPABASE_S3_SECRET_ACCESS_KEY"],
+            "default_acl": None,
+            "querystring_auth": True,
+            "querystring_expire": 60,
+            "addressing_style": "path",
+            "signature_version": "s3v4",
+            "file_overwrite": False,
+        },
+    }
+else:
+    default_storage = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+    }
+
+STORAGES = {
+    "default": default_storage,
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 
-# Private document storage
-MEDIA_ROOT = BASE_DIR / 'private_uploads'
 # Production security settings
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 
