@@ -116,6 +116,7 @@ def upload_document_view(request):
                 document=document,
                 action='UPLOAD',
                 details='Document uploaded successfully.'
+                ip_address=request.META.get('REMOTE_ADDR')
             )
 
             messages.success(request, 'Document uploaded successfully!')
