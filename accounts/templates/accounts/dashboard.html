@@ -110,7 +110,6 @@
         </div>
     </aside>
 
-
     <!-- Main Area -->
     <main class="main-area">
 
@@ -133,6 +132,12 @@
                     <span id="themeText">Light mode</span>
                 </button>
 
+                <!-- Mobile Sign Out -->
+                <form method="POST" action="{% url 'logout' %}" class="mobile-logout">
+                    {% csrf_token %}
+                    <button type="submit">↗ Sign out</button>
+                </form>
+
                 <div class="top-user">
                     <div class="top-avatar">{{ request.user.username|first|upper }}</div>
                     <div class="top-user-copy">
@@ -142,7 +147,6 @@
                 </div>
             </div>
         </header>
-
 
         <!-- Hero / Security Banner -->
         <section class="hero-panel">
@@ -189,7 +193,6 @@
 
             <div class="hero-bottom-line"></div>
         </section>
-
 
         <!-- Statistics -->
         <section class="metrics-section">
@@ -258,7 +261,6 @@
             </div>
         </section>
 
-
         <!-- Lower Dashboard -->
         <section class="lower-grid">
 
@@ -324,7 +326,6 @@
                 </div>
             </div>
 
-
             <!-- Security Information -->
             <div class="content-panel security-panel">
                 <div class="panel-heading">
@@ -375,7 +376,6 @@
 
         </section>
 
-
         <!-- Footer -->
         <footer class="app-footer">
             <span>© 2026 TrustVault</span>
@@ -385,7 +385,6 @@
 
     </main>
 </div>
-
 
 <script>
     const themeToggle = document.getElementById("themeToggle");

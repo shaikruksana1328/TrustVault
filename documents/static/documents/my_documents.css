@@ -669,3 +669,34 @@ button { font: inherit; cursor: pointer; }
         transition-duration: .01ms !important;
     }
 }
+
+/* ==========================================
+   MOBILE SIGN OUT
+========================================== */
+
+.mobile-logout {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .mobile-logout {
+        display: block;
+    }
+
+    .mobile-logout button {
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 10px;
+        font-weight: 650;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .mobile-logout button:hover {
+        color: #ff737d;
+        border-color: #ff737d;
+    }
+}
