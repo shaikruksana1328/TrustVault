@@ -1,13 +1,12 @@
+
 {% load tz %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrustVault | Activity Logs</title>
-
-
 
     <style>
         :root {
@@ -385,10 +384,16 @@
             margin-bottom: 10px;
         }
 
+        /* Mobile Sign Out - hidden on desktop */
+        .mobile-logout {
+            display: none;
+        }
+
         @media(max-width: 900px) {
             .sidebar {
                 width: 210px;
             }
+
             .main-content {
                 padding: 26px 20px;
             }
@@ -398,26 +403,59 @@
             .app-layout {
                 display: block;
             }
+
             .sidebar {
                 width: 100%;
                 padding: 17px;
             }
+
             .brand {
                 margin-bottom: 18px;
             }
+
             .nav-links {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .sidebar-bottom {
                 margin-top: 15px;
             }
+
             .main-content {
                 padding: 25px 15px;
             }
+
             .topbar {
                 align-items: flex-start;
             }
+
+            .top-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .mobile-logout {
+                display: block;
+            }
+
+            .mobile-logout button {
+                padding: 9px 12px;
+                border: 1px solid var(--border);
+                border-radius: 9px;
+                background: var(--surface);
+                color: var(--text);
+                font-size: 10px;
+                font-weight: 650;
+                white-space: nowrap;
+                cursor: pointer;
+            }
+
+            .mobile-logout button:hover {
+                color: #ff737d;
+                border-color: #ff737d;
+            }
+
             .log-card {
                 padding: 15px;
             }
@@ -465,6 +503,7 @@
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 ↪ Sign Out
             </a>
+
             <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:none;">
                 {% csrf_token %}
             </form>
@@ -484,6 +523,12 @@
 
             <div class="top-actions">
                 <button class="theme-btn" id="themeToggle" type="button" title="Toggle theme">☀</button>
+
+                <!-- Mobile Sign Out -->
+                <form method="POST" action="{% url 'logout' %}" class="mobile-logout">
+                    {% csrf_token %}
+                    <button type="submit">↗ Sign out</button>
+                </form>
             </div>
         </header>
 
