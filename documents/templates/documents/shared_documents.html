@@ -1,4 +1,4 @@
-
+```html
 {% load static %}
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -109,6 +109,12 @@
                     <span id="themeIcon">☀</span>
                     <span id="themeText">Light mode</span>
                 </button>
+
+                <!-- Mobile Sign Out -->
+                <form method="POST" action="{% url 'logout' %}" class="mobile-logout">
+                    {% csrf_token %}
+                    <button type="submit">↗ Sign out</button>
+                </form>
 
                 <div class="top-user">
                     <div class="top-avatar">
@@ -269,3 +275,4 @@
 
 </body>
 </html>
+```
