@@ -6,7 +6,9 @@ TrustVault is a Django-based secure document-sharing application. It uses server
 
 **Base URL (local development):** `http://127.0.0.1:8000/`
 
-All protected endpoints require an authenticated user unless otherwise specified.
+**Live URL:** https://trustvault-zbyx.onrender.com/
+
+All protected endpoints require authentication unless otherwise specified.
 
 ## 2. Authentication Endpoints
 
@@ -28,7 +30,7 @@ All protected endpoints require an authenticated user unless otherwise specified
 | GET | `/documents/<document_id>/download/` | Download a document | Owner, READ or EDIT |
 | GET, POST | `/documents/<document_id>/share/` | Grant or update document permissions | Document Owner |
 | POST | `/documents/<document_id>/revoke/<permission_id>/` | Revoke document permission | Document Owner |
-| GET, POST | `/documents/<document_id>/edit/` | Edit document details or file | Owner or EDIT |
+| GET, POST | `/documents/<document_id>/edit/` | Edit document details | Owner or EDIT |
 | POST | `/documents/<document_id>/delete/` | Delete a document | Document Owner |
 
 ## 4. Audit Endpoints
@@ -42,7 +44,7 @@ All protected endpoints require an authenticated user unless otherwise specified
 - Users must authenticate before accessing protected functionality.
 - Document owners can manage their own documents.
 - Users with READ permission can download documents but cannot edit them.
-- Users with EDIT permission can download and edit documents.
+- Users with EDIT permission can download and edit document details.
 - Only document owners can share documents or revoke permissions.
 - Only document owners can delete their documents.
 - Only administrators can access activity logs.
@@ -55,13 +57,13 @@ TrustVault records the following activities:
 
 - UPLOAD – Document uploaded.
 - DOWNLOAD – Document downloaded.
-- UPDATE – Document updated.
+- EDIT – Document details edited.
 - DELETE – Document deleted.
 - GRANT – Permission granted or updated.
 - REVOKE – Permission revoked.
 - ACCESS_DENIED – Unauthorized access attempt.
 
-Audit records include the actor, document where applicable, target user where applicable, action, details, IP address where captured, and timestamp.
+Audit records can include the actor, document where applicable, target user where applicable, action, details, IP address where captured, and timestamp.
 
 ## 7. Request and Response Behaviour
 
@@ -70,8 +72,8 @@ TrustVault uses standard Django web requests and responses.
 - GET requests display pages or retrieve permitted documents.
 - POST requests submit forms or perform state-changing operations.
 - Successful form submissions generally redirect to another page.
-- Unauthorized operations return HTTP 403 Forbidden.
-- Missing document or permission records return HTTP 404 Not Found.
+- Unauthorized operations may return HTTP 403 Forbidden.
+- Missing document or permission records may return HTTP 404 Not Found.
 - Login-protected pages redirect unauthenticated users to the login page.
 
 ## 8. Security Notes
@@ -86,3 +88,4 @@ TrustVault uses standard Django web requests and responses.
 
 This project currently implements Django server-rendered web endpoints. It does not claim to provide a separate REST API or token-based API authentication.
 
+The endpoint paths are based on the project's Django URL configuration. Access restrictions and request methods are enforced by the corresponding views.
