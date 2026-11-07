@@ -91,6 +91,13 @@
                     <span class="live-dot"></span> Secure workspace
                 </div>
                 <button type="button" class="theme-toggle" id="themeToggle">☼</button>
+
+                <!-- Mobile Sign Out -->
+                <form method="POST" action="{% url 'logout' %}" class="mobile-logout">
+                    {% csrf_token %}
+                    <button type="submit">↗ Sign out</button>
+                </form>
+
                 <div class="top-user">
                     <div class="top-avatar">{{ request.user.username|first|upper }}</div>
                     <div class="top-user-copy">
