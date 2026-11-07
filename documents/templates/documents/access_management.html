@@ -107,6 +107,13 @@
                 </div>
             </div>
         </header>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %} 
 
         <section class="access-hero">
             <div class="hero-icon">♧</div>

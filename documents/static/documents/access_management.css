@@ -405,6 +405,28 @@ button {
     font-size: 10px;
 }
 
+/* Success and error messages */
+
+.messages {
+    padding: 13px 16px;
+    margin-bottom: 18px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.messages.success {
+    background: rgba(53, 214, 160, .12);
+    border: 1px solid rgba(53, 214, 160, .3);
+    color: #35d6a0;
+}
+
+.messages.error {
+    background: rgba(255, 115, 115, .12);
+    border: 1px solid rgba(255, 115, 115, .3);
+    color: #ff8585;
+}
+
 /* Hero */
 
 .access-hero {
