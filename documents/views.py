@@ -115,7 +115,7 @@ def upload_document_view(request):
                 actor=request.user,
                 document=document,
                 action='UPLOAD',
-                details='Document uploaded successfully.'
+                details='Document uploaded successfully.',
                 ip_address=request.META.get('REMOTE_ADDR')
             )
 
